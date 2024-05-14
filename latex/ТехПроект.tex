@@ -530,10 +530,10 @@ S-выражение - это основной элемент синтаксис
 \begin{xltabular}{\textwidth}{|p{3.6cm}|p{1.8cm}|p{6cm}|X|}
 	\caption{Перечень функций модуля работы с точечными парами\label{funcprimpair:table}}\\ \hline
 	\centrow Имя & \centrow Аргу- \linebreak менты & \centrow Описание & \centrow Пример \\ \hline
-	%\thead{1} & \thead{2} & \centrow 3 & \centrow 4 \\ \hline
-	%\endfirsthead
-	%\continuecaption{Продолжение таблицы \ref{funcprimpair:table}}
-	%\thead{1} & \thead{2} & \centrow 3 & \centrow 4 \\ \hline
+	\thead{1} & \thead{2} & \centrow 3 & \centrow 4 \\ \hline
+	\endfirsthead
+	\continuecaption{Продолжение таблицы \ref{funcprimpair:table}}
+	\thead{1} & \thead{2} & \centrow 3 & \centrow 4 \\ \hline
 	\finishhead
 	Первый элемент & Список & Возвращает первый элемент переданного аргументом списка & < (car '(a b)) \linebreak > A \\ \hline 
 	Исключение первого элемента & Список & Возвращает переданный аргументом список без первого элемента & < (cdr '(a b c)) \linebreak > B C \\ \hline 
