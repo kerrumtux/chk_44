@@ -146,7 +146,7 @@
 \end{xltabular}
 
 Вывод в консоль результатов выполнения этих тестов также показан на рисунке \ref{modul_test_res:image}.
-\begin{figure}[ht]
+\begin{figure}[H]
 	\center{\includegraphics[width=1\linewidth]{modul_test_res}}
 	\caption{Вывод в консоль результатов выполнения модульного теста test\_symbols.c}
 	\label{modul_test_res:image}
@@ -168,7 +168,7 @@
 
 Вывод в консоль результатов выполнения этих тестов так же показан на рисунке \ref{system_test_res:image}.
 
-\begin{figure}[ht]
+\begin{figure}[H]
 	\center{\includegraphics[width=1\linewidth]{system_test_res}}
 	\caption{Вывод в консоль результатов выполнения системных тестов}
 	\label{system_test_res:image}
@@ -190,6 +190,54 @@
 \item Выводим пустую строку, создав тем самым перенос строки для визуального разделения результатов тестов.
 
 \end{enumerate}
+
+\subsection{Пример использования метапрограммирования для сокращения размера исходного кода}
+
+Приведу пример программы, написанной на ДЯП, позволяющей сокращать размер исходного кода за счёт использования макросов.
+
+Напишу макрос для ветвления, позволяющий выполнять первый исход, если результат условия ложный, иначе второй исход. Для этого реализуем три макроса:
+
+Напишу макросы для следующих функций:
+\begin{itemize}
+	\item if: для выполнения первого исхода при истинном условии и второго иначе, разработаю на основе встроенного в язык оператора ветвления \quotes{cond};
+	\item not: для инверсии булевых значений \quotes{T} и \quotes{NIL};
+	\item nif: объединяющий \quotes{if} и \quotes{not} для достижения поставленной цели.
+\end{itemize}
+
+Реализация макросов:
+\begin{lstlisting}[language=Lisp, frame=none]
+	(defmacro if (test true false)
+	`(cond (,test ,true)
+	(t ,false)))
+	
+	(defmacro not (test)
+	`(if ,test nil t))
+	
+	(defmacro nif (test true false)
+	`(if (not ,test) ,true ,false))
+\end{lstlisting}
+
+Пример использования:
+\begin{lstlisting}[language=Lisp, frame=none]
+	(setq a 0)
+	
+	(nif (> 5 3)
+	(setq a (+ a 1))
+	(setq a (+ a 2)))
+\end{lstlisting}
+
+Если бы тот же самый пример был написан с применением \quotes{cond}:
+\begin{lstlisting}[language=Lisp, frame=none]
+	(setq a 0)
+	
+	(cond ((if (> 5 3) nil t)
+	(setq a (+ a 1)))
+	(t (setq a (+ a 2))))
+\end{lstlisting}
+
+Код, написанный с использованием nif, проще структурно, потому легче для понимания, и его кодовая запись короче.
+
+Таким образом, с использованием разработанного макроса \quotes{nif} были достигнуты сокращение кода и его упрощение для чтения.
 
 \subsection{Сборка программной системы}
 Для компиляции созданной ПС были разработаны два файла сборки \quotes{makefile} \cite{e8}, реализующие разные варианты сборки интерпретатора.
