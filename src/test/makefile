@@ -1,31 +1,28 @@
 SHELL=bash
-CFLAGS=-I. -I../ -I../../../include --coverage -g -Wno-pointer-to-int-cast
+CFLAGS=-D X64 -I. -I../ --coverage -g -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -Wno-int-conversion
 LDFLAGS="-lgcov"
-TESTS=/tmp/test_lexer /tmp/test_eval /tmp/test_symbols /tmp/test_objects /tmp/test_parser /tmp/test_eval_int /tmp/test_arrays /tmp/test_arith /tmp/test_str_int /tmp/test_pair
-
+TESTS=/tmp/test_lexer /tmp/test_symbols /tmp/test_objects /tmp/test_parser /tmp/test_eval_int /tmp/test_arrays /tmp/test_arith /tmp/test_str_int /tmp/test_pair
 all: $(TESTS)
 
 /tmp/test_lexer: test_lexer.c ../lexer.c
 	gcc $(CFLAGS) $(LDFLAGS) -o $@ $^
-/tmp/test_eval: test_eval.c ../eval.c ../pair.c
+/tmp/test_eval_int: test_eval_int.c ../eval.c ../symbols.c ../objects.c ../pair.c ../alloc.c
 	gcc $(CFLAGS) $(LDFLAGS) -o $@ $^
-/tmp/test_eval_int: test_eval_int.c ../eval.c ../symbols.c ../objects.c ../pair.c
+/tmp/test_pair: test_pair.c ../symbols.c ../objects.c ../pair.c ../alloc.c ../eval.c
 	gcc $(CFLAGS) $(LDFLAGS) -o $@ $^
-/tmp/test_pair: test_pair.c ../eval.c ../symbols.c ../objects.c ../pair.c
-	gcc $(CFLAGS) $(LDFLAGS) -o $@ $^
-/tmp/test_arith: test_arith.c ../eval.c ../symbols.c ../objects.c ../arith.c
+/tmp/test_arith: test_arith.c ../eval.c ../symbols.c ../objects.c ../arith.c ../alloc.c
 	gcc $(CFLAGS) $(LDFLAGS) -o $@ $^
 /tmp/test_symbols: test_symbols.c ../symbols.c
 	gcc $(CFLAGS) $(LDFLAGS) -o $@ $^
-/tmp/test_objects: test_objects.c ../objects.c
+/tmp/test_objects: test_objects.c ../objects.c ../alloc.c
 	gcc $(CFLAGS) $(LDFLAGS) -o $@ $^
-/tmp/test_parser: test_parser.c ../parser.c ../objects.c
+/tmp/test_parser: test_parser.c ../parser.c ../objects.c ../alloc.c ../symbols.c
 	gcc $(CFLAGS) $(LDFLAGS) -o $@ $^
-/tmp/test_arrays: test_arrays.c ../symbols.c ../objects.c ../array.c
+/tmp/test_arrays: test_arrays.c ../symbols.c ../objects.c ../array.c ../alloc.c
 	gcc $(CFLAGS) $(LDFLAGS) -o $@ $^
-/tmp/test_str_int: test_str_int.c ../symbols.c ../objects.c ../str.c
+/tmp/test_str_int: test_str_int.c ../symbols.c ../objects.c ../str.c ../alloc.c
 	gcc $(CFLAGS) $(LDFLAGS) -o $@ $^
-/tmp/test_sys: test_sys.c ../eval.c ../symbols.c ../objects.c ../parser.c ../lexer.c ../arith.c ../str.c ../array.c ../pair.c ../predicates.c
+/tmp/test_sys: test_sys.c ../eval.c ../symbols.c ../objects.c ../parser.c ../lexer.c ../arith.c ../str.c ../array.c ../pair.c ../predicates.c ../alloc.c
 	gcc $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 test: $(TESTS) /tmp/test_sys

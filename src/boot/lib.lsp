@@ -2,44 +2,6 @@
   "Проверка на пустое значение"
   (eq x (quote())))
 
-(defun append (list1 list2)
-  "объединение двух списков (1 . (2 . nil)) (a . (b . nil))"
-  "(append '(1 2) '(a b))"
-  "(1 . (append (2) '(a b)))"
-  "(1 2 . (a b))"
-  "(1 2 a b)"
-  (if (null list1) list2
-    (if (null (cdr list1))
-	(cons (car list1) list2)
-      (cons (car list1) (append (cdr list1) list2)))))
-
-(defun app (f list)
-  "Применяет функцию f к каждому элементу списка list"
-  "(app '(lambda (x) (set-hash h x nil)) '(x y z))"
-  (if (null list) nil
-    (progn
-      (funcall f (car list))
-      (app f (cdr list)))))
-
-(defun map (f list)
-  "Применяет функцию f к каждому элементу списка list и возвращает новый список"
-  (if (null list) nil
-    (cons (funcall f (car list)) (map f (cdr list)))))
-
-(defun foldl (f start list)
-  "Левоассоциативная свертка (foldl):"
-  "(f ... (f (f start elem_1) elem_2) ... elem_n)"
-  (defun foldl*(list a)
-    (if (null list) a
-      (foldl* (cdr list) (funcall f a (car list)))))
-  (foldl* list start))
-
-(defun foldr (f start list)
-  "Правоассоциативная свертка (foldr):"
-  "(f elem_1 (f elem_2 ... (f elem_n start) ... ))"
-  (if (null list) start
-    (funcall f (foldr f start (cdr list)) (car list))))
-
 (defun fac(x)
   (cond
     ((< x 2) 1)
@@ -50,10 +12,12 @@
   (if (eq x t) nil t))
 
 (defun caar(x) (car (car x)))
+(defun caadr(x) (car (car (cdr x))))
 (defun cadr(x) (car (cdr x)))
 (defun caddr(x) (car (cdr (cdr x))))
 (defun cadar(x) (car (cdr (car x))))
 (defun cdar(x) (cdr (car x)))
+(defun cddr(x) (cdr (cdr x)))
 
 (defun get-bit (num bit)
   "Получение бита с номером bit у числа num"
@@ -172,6 +136,10 @@
   "Больше или равно"
   `(or (> ,g1 ,g2) (equal ,g1 ,g2)))
 
+(defmacro = (g1 g2)
+  "Равно"
+  `(equal ,g1 ,g2))
+
 (defmacro <= (g1 g2)
   "Меньше или равно"
   `(or (< ,g1 ,g2) (equal ,g1 ,g2)))
@@ -190,33 +158,14 @@
       (if (not (null (cdr value))) ''error
 	  `(setf ,name ,(car value))))) 
 
+(defmacro defconst (name val)
+  "Создать константу"
+  `(defvar ,name ,val))
+
 (defun putstring (s)
   "Печать строки"
   (for i 0 (string-size s) 
        (putchar (char s i))))
-
-(defmacro with-struct (struct ar ofs &rest body)
-  "Выполнить вычисление body и установить значения переменных структуры struct из массива arr по смещению ofs"
-  `(let ,(struct-fields (eval struct) (eval ar) (eval ofs)) ,@body))
-
-(defun struct-fields (struct arr ofs)
-  "Преобразовывает структуру в список для let"
-					;  (let ((attr (arr-get-num arr ofs num))
-					;       ((type .. ))
-   (car (foldl '(lambda (acc elem)
-	    (let ((list (car acc))
-		  (ofs (cdr acc))
-		  (field (car elem))
-		  (size (cdr elem)))
-	      (cons (append list (list `(,field (arr-get-num ,arr ,ofs ,size))))
-		    (+ ofs size))))
-	  (cons nil ofs) struct)))
-
-(defun arr-get-num (arr ofs size)
-  "Прочесть из массива arr по смещению ofs size байт"
-  (if (equal size 0) 0
-    (let ((it (- size 1)))
-      (+ (<< (aref arr (+ ofs it)) (* it 8)) (arr-get-num arr ofs it)))))
 
 (defun abs (x)
   "Абсолютное значение"
@@ -236,3 +185,9 @@
   "Возвращает уникальный символ типа G<n>, где n - новое число"
   (setf *gensym-counter* (++ *gensym-counter*))
   (intern (concat "G" (inttostr *gensym-counter*))))
+
+(defun clone (obj)
+  "Делает копию объекта (кроме чисел, массивов и строк)"
+  (cond ((null obj) nil)
+	((atom obj) obj)
+	(t (cons (clone (car obj)) (clone (cdr obj))))))

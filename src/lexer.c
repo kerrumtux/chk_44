@@ -267,6 +267,11 @@ void get_symbol(char *cur_str)
     int c = 0;
     while (!is_delimeter(cur_symbol))
     {
+	if (cur_symbol == '\b') {
+	    cur_str[--c] = ' ';
+	    get_cur_char();
+	    continue;
+	}
 	if (!(is_alpha(cur_symbol) || is_digit(cur_symbol) || is_symbol(cur_symbol))){
 	    printf("ERROR: lexer.c: Unsupported character in input: %c(#%x)", cur_symbol, cur_symbol);
 	    token_error = 1;
@@ -349,6 +354,27 @@ token_t get_comma()
 }
 
 /** 
+ * Определяет тип лексемы # или #\
+ *
+ * @return лексему
+ */
+token_t get_sharp()
+{
+    char ctr[2];
+    ctr[0] = cur_symbol;
+    get_cur_char();
+    ctr[1] = cur_symbol;
+    if (ctr[0] == '#' && ctr[1] == '\\') {
+	token.type = T_CHAR;
+	get_cur_char();
+	token.value = cur_symbol;
+    } else {
+	token.type = SHARP;
+	unget_cur_char();
+    }
+}
+
+/** 
  * Читает очередную лексему из потока ввода
  *
  * @return указатель на структуру лексемы
@@ -384,7 +410,7 @@ token_t *get_token()
 	token.type = T_STRING;
 	break;
     case '#':
-	token.type = SHARP;
+	get_sharp();
 	break;
     case '.':
 	token.type = DOT;

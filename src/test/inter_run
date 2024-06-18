@@ -1,0 +1,4 @@
+IN=/tmp/in
+OUT=/tmp/out
+cp "$1" $IN
+./inter <$IN

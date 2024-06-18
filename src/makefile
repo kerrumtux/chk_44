@@ -1,14 +1,9 @@
 SHELL=bash
-SRC=parser.o lexer.o objects.o symbols.o eval.o arith.o array.o str.o pair.o predicates.o
-CFLAGS=-g -m32 -nostdlib -nodefaultlibs -Wno-builtin-declaration-mismatch -I../include
-LISP=boot/lib.lsp boot/bgr.lsp boot/ata.lsp boot/mbr.lsp boot/fat32.lsp
-#boot/hash.lsp boot/graphics/matrix.lsp boot/graphics/backend.lsp boot/graphics/frontend.lsp
+CFLAGS=-D X64 --coverage -g -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -Wno-int-conversion
+LDFLAGS="-lgcov"
 
-all: $(SRC) /tmp/lisp.lsp
+inter:  main.c eval.c symbols.c objects.c parser.c lexer.c arith.c str.c array.c pair.c predicates.c alloc.c
+	gcc $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-/tmp/lisp.lsp: $(LISP)
-	cat $^ >$@ ;
-	echo -e -n "\xff" >>$@
-
-/tmp/inter: $(SRC)
-	gcc $^ -o $@
+build: inter
+	cp test/inter_run ./cl-inter

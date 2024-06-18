@@ -7,7 +7,6 @@
 #include "alloc.h"
 #include "objects.h"
 #include "eval.h"
-#include "test.h"
 #include "parser.h"
 #include "arith.h"
 #include "str.h"

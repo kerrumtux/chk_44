@@ -7,21 +7,21 @@
 /*
  * Функция symbolp, которая возвращает T, если obj - символ и NIL, если нет
  */
-object_t *symbolp(object_t *params)
+object_t symbolp(object_t params)
 {   
-    if (params == NULL) {
+    if (params == NULLOBJ) {
 	error("SYMBOLP: no params");
 	return ERROR;
-    } else if (TAIL(params) != NULL) {
+    } else if (TAIL(params) != NULLOBJ) {
 	error("SYMBOLP: many params");
 	return ERROR;
     }
-    object_t *symbol = FIRST(params);
+    object_t symbol = FIRST(params);
     
-    if (symbol->type == SYMBOL)
-	return object_new(SYMBOL, "T");
+    if (TYPE(symbol) == SYMBOL)
+	return NEW_OBJECT(SYMBOL, find_symbol("T"));
     else
-	return NULL;
+	return NULLOBJ;
 }
 
 
